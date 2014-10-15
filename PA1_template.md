@@ -13,7 +13,6 @@ Two datasets are needed to complete this project.  From the summary, we see that
 ```r
         # Original dataset
         activity <- read.csv("data/activity.csv", stringsAsFactors=FALSE,  header=TRUE)
-        
         summary(activity)
 ```
 
@@ -31,6 +30,17 @@ Two datasets are needed to complete this project.  From the summary, we see that
 ```r
         # Transformed data set 
         activityNoNA <- activity[which(is.na(activity$steps)== FALSE),]
+        summary(activityNoNA)
+```
+
+```
+##      steps           date              interval   
+##  Min.   :  0.0   Length:15264       Min.   :   0  
+##  1st Qu.:  0.0   Class :character   1st Qu.: 589  
+##  Median :  0.0   Mode  :character   Median :1178  
+##  Mean   : 37.4                      Mean   :1178  
+##  3rd Qu.: 12.0                      3rd Qu.:1766  
+##  Max.   :806.0                      Max.   :2355
 ```
 
 ## What is mean total number of steps taken per day?
@@ -69,7 +79,18 @@ median(totalSteps$x) # median number of steps taken per day
 Contintue to use the transformed data set. The pattern is best viewed by creating a plot of the average number of steps taken across all days for each 5-minute interval.  First, the average number of steps for each interval is calculated.
 
 ```r
-avgSteps <- aggregate(activityNoNA$steps, by=list(interval=activityNoNA$interval), FUN=mean) 
+        avgSteps <- aggregate(activityNoNA$steps, by=list(interval=activityNoNA$interval), FUN=mean) 
+        head(avgSteps)
+```
+
+```
+##   interval       x
+## 1        0 1.71698
+## 2        5 0.33962
+## 3       10 0.13208
+## 4       15 0.15094
+## 5       20 0.07547
+## 6       25 2.09434
 ```
 The sample results indicate the average number of steps across all days for each specfic 5-minute interval. A day has 288 5-minute intervals. The interval id indicates the interval starting point of the interval in military time, hence
 
@@ -92,7 +113,7 @@ avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l',
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
-The 5-minute interval, on average across all the days in the dataset that contains, the maximum number of steps is interval 0835 with max steps of 206. So the most active time
+The 5-minute interval that has the maximum number of steps is interval 0835 with max steps of 206. So the most active time
 of day for this individual is 08:35AM.
 
 ```r
@@ -142,8 +163,8 @@ iSteps <- merge(activity, intervalMean, by.x="interval", by.y="m")
 iSteps$steps[is.na(iSteps$steps)] <-  iSteps$x[is.na(iSteps$steps)]
 ```
 
-The new data set (newActivity) is created by subsetting and excluding the x (mean) variable, then sorting the data set by date.  There are also no missing values in
-this data set. 
+The new data set (newActivity) is created by subsetting and excluding the x (mean) variable, then sorting the data set by date.  
+
 
 ```r
 newAct <-  subset(iSteps, select = c(steps, date, interval))  #180 obs of 68 variables
@@ -167,7 +188,7 @@ sum(is.na(newActivity))
 ```
 The new (imputed) dataset is equal in number of observations and variables to the original dataset and there are no missing values. 
 
-The following uses the imputed dataset (newActivity) to create the histogram of the total number of steps taken per day. To facilitate the comparison with the histogram of the original data (activity), the plots are placed side-by-side. The mean and median of each dataset is calculated. 
+The following uses the imputed dataset (newActivity) to create the histogram of the total number of steps taken per day. To facilitate the comparison with the histogram of the original data (activity), the plots are placed side-by-side. The mean and median of each dataset is calculated. The median is shown on the histograms. 
 
 
 ```r
@@ -249,7 +270,7 @@ Imputing the data has no impact on the mean or the median number of steps taken 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Using the imputed data set, the function weekdays is used to convert dates to days of the week. It is then necessary to group days into type: "Saturday" and "Sunday" are of type "weekend"" and the remaining days of the week are of type "weekday". The average number steps taken is calculated across all weekday days or weekend days. 
+Using the imputed data set, the function weekdays() is used to convert dates to days of the week. It is then necessary to group days into type: "Saturday" and "Sunday" are of type "weekend"" and the remaining days of the week are of type "weekday". The average number steps taken is calculated across all weekday days or weekend days. 
 
 ```r
 newActivity$weekday <- weekdays(as.Date(newActivity$date, '%Y-%m-%d'))
@@ -270,7 +291,7 @@ xyplot(x ~interval | type, data, type = "l", layout=c(1,2), ylab = "Average numb
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
-Examining the chart the maximum average number of steps for the week occurs on weekday mornings between 5:00 AM and 10:00 AM. The calcuation below establish the exact interval at 8:35 AM.
+Examining the chart the maximum average number of steps for the week occurs on weekday mornings between 5:00 AM and 10:00 AM. The calculation below establishes the exact interval at 8:35 AM.
 
 ```r
 data[which(data$x == max(data$x)),]
@@ -281,4 +302,4 @@ data[which(data$x == max(data$x)),]
 ## 104      835 weekday 230.4
 ```
 
-There is another weekday peak of activity between 3:00 PM and 8:00 PM.  Weekend activity levels differ.  The maxiumn average number of steps is below the weekday maximun, but the participant is more active throughout the day from 8:00 AM to 8:00 PM. 
+There is another weekday peak of activity between 3:00 PM and 8:00 PM.  Weekend activity levels differ.  The maximum average number of steps on the weekend is below the weekday maximum, but the participant is more active throughout the day from 8:00 AM to 8:00 PM. 
