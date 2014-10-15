@@ -69,8 +69,10 @@ interval | Time
 
 
 ```r
-avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l', main = "Average Daily Activity", xlab = "Interval",
-                     ylab = "Average Number of Steps", col = "Dark Green", sub= "Excluded missing values in steps")
+avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l', 
+                main = "Average Daily Activity", xlab = "Interval", 
+                ylab = "Average Number of Steps", 
+                col = "Dark Green", sub= "Excluded missing values in steps")
 ```
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
