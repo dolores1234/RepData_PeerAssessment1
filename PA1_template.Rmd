@@ -87,7 +87,7 @@ iSteps <- merge(activity, intervalMean, by.x="interval", by.y="m")
 
 iSteps$steps[is.na(iSteps$steps)] <-  iSteps$x[is.na(iSteps$steps)]
 ```
-In the resultant data, there are no missing (NA) values for steps.  Value of steps is >= 0 for each interval in each day.  
+There are no missing (NA) values for steps.  Value of steps is >= 0 for each interval in each day.  
 
 The new data set is created by subsetting and excluding the x (mean) variable, then sorting the data set by date:
 ```{r}
