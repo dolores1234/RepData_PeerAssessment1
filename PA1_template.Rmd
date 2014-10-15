@@ -7,11 +7,13 @@ output:
 
 
 ## Loading and preprocessing the data
-Two datasets are needed to complete this project.  The orignal data set contains missing values for one of the variables(steps).  The second data set is a tranform of the original where the rows with missing values are removed.
+Two datasets are needed to complete this project.  From the summary, we see that the orignal data set contains missing values for the variable steps.  The second data set is a tranform of the original where the rows with missing values are removed.
 
 ```{r setoptions, echo=TRUE}
         # Original dataset
         activity <- read.csv("data/activity.csv", stringsAsFactors=FALSE,  header=TRUE)
+        
+        summary(activity)
         
         # Transformed data set 
         activityNoNA <- activity[which(is.na(activity$steps)== FALSE),]
@@ -20,7 +22,7 @@ Two datasets are needed to complete this project.  The orignal data set contains
 
 ## What is mean total number of steps taken per day?
 
-This is based on the transformed data set, i.e. there are no missing values in the steps variable. The following code calculates the total number of steps across all days and plots the histogram:
+This is based on the transformed data set where there are no missing values in the steps variable. The following code calculates the total number of steps across all days and plots the histogram:
 ```{r}
 totalSteps <- aggregate(activityNoNA$steps, by=list(date=activityNoNA$date), FUN = sum )
 # histogram of total number of steps (x) taken each day
@@ -29,7 +31,7 @@ stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", y
 
 ```
 
-Calculate mean and median values:
+The mean total number of steps taken per day is 10766 and the median is 10765.
 ```{r}
 mean(totalSteps$x)  # mean number of steps taken per day
 median(totalSteps$x) # median number of steps taken per day
@@ -59,23 +61,23 @@ avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l',
                 col = "Dark Green", sub= "Excluded missing values in steps")
 ```
 
-The 5-minute interval, on average across all the days in the dataset that contains, the maximum number of steps is:
+The 5-minute interval, on average across all the days in the dataset that contains, the maximum number of steps is interval 0835 with max steps of 206. So the most active time
+of day for this individual is 08:35AM.
 ```{r}
 maxNumSteps <-avgSteps[which(avgSteps$x == max(avgSteps$x)),]
 maxNumSteps
 ```
-The most active time of day is at 08:35AM. 
 
 ## Imputing missing values
 
 The original data set contains missing values and is used to impute missing values. 
 
-Missing values in the dataset may introduce a bias into the calculations or summaries of the data. To determine if there are missing values in the steps and date variables:
+Missing values in the dataset may introduce a bias into the calculations or summaries of the data. There are 2304 missing (NA) values in steps and no missing (NA)
+values in date.
 ```{r}
 sum(is.na(activity$steps)) # number of missing values in steps
 sum (is.na(activity$date)) # number of missing values in date
 ```
-The above calculations indicate there an 2304 missing (NA) values in steps and no missing (NA) values in date.
 
 The missing values in steps will be filled with the mean for the 5-minute interval.
 
@@ -89,13 +91,14 @@ iSteps <- merge(activity, intervalMean, by.x="interval", by.y="m")
 
 iSteps$steps[is.na(iSteps$steps)] <-  iSteps$x[is.na(iSteps$steps)]
 ```
-There are no missing (NA) values for steps.  Value of steps is >= 0 for each interval in each day.  
 
-The new data set is created by subsetting and excluding the x (mean) variable, then sorting the data set by date:
+The new data set (newActivity) is created by subsetting and excluding the x (mean) variable, then sorting the data set by date.  There are also no missing values in
+this data set. 
 ```{r}
 newAct <-  subset(iSteps, select = c(steps, date, interval))  #180 obs of 68 variables
 newActivity <- newAct[order(newAct$date),]
 str(newActivity)
+sum(is.na(newActivity))
 ```
 The new (imputed) dataset is equal in number of observations and variables to the original dataset and there are no missing values. 
 
