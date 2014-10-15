@@ -7,20 +7,35 @@ output:
 
 
 ## Loading and preprocessing the data
-Two datasets are needed to complete this project.  The orignal data set contains missing values for one of the variables(steps).  The second data set is a tranform of the original where the rows with missing values are removed.
+Two datasets are needed to complete this project.  From the summary, we see that the orignal data set contains missing values for the variable steps.  The second data set is a tranform of the original where the rows with missing values are removed.
 
 
 ```r
         # Original dataset
         activity <- read.csv("data/activity.csv", stringsAsFactors=FALSE,  header=TRUE)
         
+        summary(activity)
+```
+
+```
+##      steps           date              interval   
+##  Min.   :  0.0   Length:17568       Min.   :   0  
+##  1st Qu.:  0.0   Class :character   1st Qu.: 589  
+##  Median :  0.0   Mode  :character   Median :1178  
+##  Mean   : 37.4                      Mean   :1178  
+##  3rd Qu.: 12.0                      3rd Qu.:1766  
+##  Max.   :806.0                      Max.   :2355  
+##  NA's   :2304
+```
+
+```r
         # Transformed data set 
         activityNoNA <- activity[which(is.na(activity$steps)== FALSE),]
 ```
 
 ## What is mean total number of steps taken per day?
 
-This is based on the transformed data set, i.e. there are no missing values in the steps variable. The following code calculates the total number of steps across all days and plots the histogram:
+This is based on the transformed data set where there are no missing values in the steps variable. The following code calculates the total number of steps across all days and plots the histogram:
 
 ```r
 totalSteps <- aggregate(activityNoNA$steps, by=list(date=activityNoNA$date), FUN = sum )
@@ -31,7 +46,7 @@ stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", y
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
-Calculate mean and median values:
+The mean total number of steps taken per day is 10766 and the median is 10765.
 
 ```r
 mean(totalSteps$x)  # mean number of steps taken per day
@@ -77,7 +92,8 @@ avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l',
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
-The 5-minute interval, on average across all the days in the dataset that contains, the maximum number of steps is:
+The 5-minute interval, on average across all the days in the dataset that contains, the maximum number of steps is interval 0835 with max steps of 206. So the most active time
+of day for this individual is 08:35AM.
 
 ```r
 maxNumSteps <-avgSteps[which(avgSteps$x == max(avgSteps$x)),]
@@ -88,13 +104,13 @@ maxNumSteps
 ##     interval     x
 ## 104      835 206.2
 ```
-The most active time of day is at 08:35AM. 
 
 ## Imputing missing values
 
 The original data set contains missing values and is used to impute missing values. 
 
-Missing values in the dataset may introduce a bias into the calculations or summaries of the data. To determine if there are missing values in the steps and date variables:
+Missing values in the dataset may introduce a bias into the calculations or summaries of the data. There are 2304 missing (NA) values in steps and no missing (NA)
+values in date.
 
 ```r
 sum(is.na(activity$steps)) # number of missing values in steps
@@ -111,7 +127,6 @@ sum (is.na(activity$date)) # number of missing values in date
 ```
 ## [1] 0
 ```
-The above calculations indicate there an 2304 missing (NA) values in steps and no missing (NA) values in date.
 
 The missing values in steps will be filled with the mean for the 5-minute interval.
 
@@ -126,9 +141,9 @@ iSteps <- merge(activity, intervalMean, by.x="interval", by.y="m")
 
 iSteps$steps[is.na(iSteps$steps)] <-  iSteps$x[is.na(iSteps$steps)]
 ```
-There are no missing (NA) values for steps.  Value of steps is >= 0 for each interval in each day.  
 
-The new data set is created by subsetting and excluding the x (mean) variable, then sorting the data set by date:
+The new data set (newActivity) is created by subsetting and excluding the x (mean) variable, then sorting the data set by date.  There are also no missing values in
+this data set. 
 
 ```r
 newAct <-  subset(iSteps, select = c(steps, date, interval))  #180 obs of 68 variables
@@ -141,6 +156,14 @@ str(newActivity)
 ##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
 ##  $ date    : chr  "2012-10-01" "2012-10-01" "2012-10-01" "2012-10-01" ...
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+```r
+sum(is.na(newActivity))
+```
+
+```
+## [1] 0
 ```
 The new (imputed) dataset is equal in number of observations and variables to the original dataset and there are no missing values. 
 
