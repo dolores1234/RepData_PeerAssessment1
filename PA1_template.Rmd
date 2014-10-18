@@ -4,7 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
-## Dolores Kalayta
+## Dolores Kalayta   
 
 ## Loading and preprocessing the data
 Two datasets are needed to complete this project.  From the summary, we see that the orignal data set contains missing values for the variable steps.  The second data set is a tranform of the original where the rows with missing values are removed.
