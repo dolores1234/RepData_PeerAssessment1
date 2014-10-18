@@ -23,11 +23,11 @@ Two datasets are needed to complete this project.  From the summary, we see that
 ## What is mean total number of steps taken per day?
 
 This is based on the transformed data set where there are no missing values in the steps variable. The following code calculates the total number of steps across all days and plots the histogram:
-```{r}
+```{r ExcludedMissingValues}
 totalSteps <- aggregate(activityNoNA$steps, by=list(date=activityNoNA$date), FUN = sum )
 # histogram of total number of steps (x) taken each day
-stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", ylim = c(0, 40),
-                  sub= "Excluded missing values in steps",xlab = "Total Steps", col = "Yellow")
+stepsPlot <- hist(totalSteps$x, main = "Total Steps", ylim = c(0, 40),
+                  sub= "Excluded missing values in steps",xlab = " ", col = "Yellow")
 
 ```
 
@@ -45,7 +45,7 @@ Contintue to use the transformed data set. The pattern is best viewed by creatin
         head(avgSteps)
 
 ```
-The sample results indicate the average number of steps across all days for each specfic 5-minute interval. A day has 288 5-minute intervals. The interval id indicates the interval starting point of the interval in military time, hence
+The sample results indicate the average number of steps across all days for each specfic 5-minute interval. A day has 288 5-minute intervals. The interval id indicates the interval starting point of the interval in 24-hour clock time, hence
 
 interval | Time
 
@@ -56,9 +56,9 @@ interval | Time
     2000 | 08:00 PM       
     2355 | 11:55 PM
 
-```{r}
+```{r AverageDailyActivity}
 avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l', 
-                main = "Average Daily Activity", xlab = "Interval", 
+                main = "Average Daily Activity", xlab = "5-Minute Intervals", 
                 ylab = "Average Number of Steps", 
                 col = "Dark Green", sub= "Excluded missing values in steps")
 ```
@@ -72,7 +72,7 @@ maxNumSteps
 
 ## Imputing missing values
 
-The original data set contains missing values and is used to impute missing values. 
+The original data set contains missing values and is used to impute the missing values. 
 
 Missing values in the dataset may introduce a bias into the calculations or summaries of the data. There are 2304 missing (NA) values in steps and no missing (NA)
 values in date.
@@ -81,7 +81,9 @@ sum(is.na(activity$steps)) # number of missing values in steps
 sum (is.na(activity$date)) # number of missing values in date
 ```
 
-The missing values in steps will be filled with the mean for the 5-minute interval.
+This report used the following strategy to impute missing data: 
+
+missing values in steps will be filled with the mean for the 5-minute interval
 
 - calculate the mean of each interval over all days
 - merge the datasets on interval 
@@ -97,7 +99,7 @@ iSteps$steps[is.na(iSteps$steps)] <-  iSteps$x[is.na(iSteps$steps)]
 The new data set (newActivity) is created by subsetting and excluding the x (mean) variable, then sorting the data set by date.  
 
 ```{r}
-newAct <-  subset(iSteps, select = c(steps, date, interval))  #180 obs of 68 variables
+newAct <-  subset(iSteps, select = c(steps, date, interval)) 
 newActivity <- newAct[order(newAct$date),]
 str(newActivity)
 sum(is.na(newActivity))
@@ -106,18 +108,18 @@ The new (imputed) dataset is equal in number of observations and variables to th
 
 The following uses the imputed dataset (newActivity) to create the histogram of the total number of steps taken per day. To facilitate the comparison with the histogram of the original data (activity), the plots are placed side-by-side. The mean and median of each dataset is calculated. The median is shown on the histograms. 
 
-```{r}
+```{r Imputed_Excluded}
 totalStepsAct <- aggregate(newActivity$steps, by=list(date=newActivity$date), FUN = sum )
 
 par (mfrow=c(1,2))
-stepsPlotAct <- hist(totalStepsAct$x, main = "Total Number of Steps Taken Each Day", xlab="Total Steps",
+stepsPlotAct <- hist(totalStepsAct$x, main = "Total Steps", xlab=" ",
                      ylim = c(0, 40),
                      sub = "Imputed missing values",
                      col = "Sky Blue")
         abline(v=median(totalStepsAct$x), col = "red", lwd=2)
 
-stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", ylim = c(0, 40),
-                  sub= "Excluded missing values",xlab = "Total Steps", col = "Yellow")
+stepsPlot <- hist(totalSteps$x, main = "Total Steps", ylim = c(0, 40),
+                  sub= "Excluded missing values",xlab = " ", col = "Yellow")
         abline(v=median(totalSteps$x), col = "red", lwd=2)
 
 # original data set with missing values in steps 
@@ -146,7 +148,7 @@ newActivity$weekday.type <-factor(newActivity$weekday.type)
 ```
 
 Using the lattice system, the panel plots are created to compare weekend vs. weekday activity.
-```{r}
+```{r WeekEnd_Day}
 data <- aggregate(newActivity$steps, by=list(interval=newActivity$interval, 
                                              type=newActivity$weekday.type), FUN=mean)
 

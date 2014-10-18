@@ -50,11 +50,11 @@ This is based on the transformed data set where there are no missing values in t
 ```r
 totalSteps <- aggregate(activityNoNA$steps, by=list(date=activityNoNA$date), FUN = sum )
 # histogram of total number of steps (x) taken each day
-stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", ylim = c(0, 40),
-                  sub= "Excluded missing values in steps",xlab = "Total Steps", col = "Yellow")
+stepsPlot <- hist(totalSteps$x, main = "Total Steps", ylim = c(0, 40),
+                  sub= "Excluded missing values in steps",xlab = " ", col = "Yellow")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
+![plot of chunk ExcludedMissingValues](figure/ExcludedMissingValues.png) 
 
 The mean total number of steps taken per day is 10766 and the median is 10765.
 
@@ -92,7 +92,7 @@ Contintue to use the transformed data set. The pattern is best viewed by creatin
 ## 5       20 0.07547
 ## 6       25 2.09434
 ```
-The sample results indicate the average number of steps across all days for each specfic 5-minute interval. A day has 288 5-minute intervals. The interval id indicates the interval starting point of the interval in military time, hence
+The sample results indicate the average number of steps across all days for each specfic 5-minute interval. A day has 288 5-minute intervals. The interval id indicates the interval starting point of the interval in 24-hour clock time, hence
 
 interval | Time
 
@@ -106,12 +106,12 @@ interval | Time
 
 ```r
 avgStepsPlot <- plot(avgSteps$interval, avgSteps$x, type= 'l', 
-                main = "Average Daily Activity", xlab = "Interval", 
+                main = "Average Daily Activity", xlab = "5-Minute Intervals", 
                 ylab = "Average Number of Steps", 
                 col = "Dark Green", sub= "Excluded missing values in steps")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk AverageDailyActivity](figure/AverageDailyActivity.png) 
 
 The 5-minute interval that has the maximum number of steps is interval 0835 with max steps of 206. So the most active time
 of day for this individual is 08:35AM.
@@ -128,7 +128,7 @@ maxNumSteps
 
 ## Imputing missing values
 
-The original data set contains missing values and is used to impute missing values. 
+The original data set contains missing values and is used to impute the missing values. 
 
 Missing values in the dataset may introduce a bias into the calculations or summaries of the data. There are 2304 missing (NA) values in steps and no missing (NA)
 values in date.
@@ -149,7 +149,9 @@ sum (is.na(activity$date)) # number of missing values in date
 ## [1] 0
 ```
 
-The missing values in steps will be filled with the mean for the 5-minute interval.
+This report used the following strategy to impute missing data: 
+
+missing values in steps will be filled with the mean for the 5-minute interval
 
 - calculate the mean of each interval over all days
 - merge the datasets on interval 
@@ -167,7 +169,7 @@ The new data set (newActivity) is created by subsetting and excluding the x (mea
 
 
 ```r
-newAct <-  subset(iSteps, select = c(steps, date, interval))  #180 obs of 68 variables
+newAct <-  subset(iSteps, select = c(steps, date, interval)) 
 newActivity <- newAct[order(newAct$date),]
 str(newActivity)
 ```
@@ -195,18 +197,18 @@ The following uses the imputed dataset (newActivity) to create the histogram of 
 totalStepsAct <- aggregate(newActivity$steps, by=list(date=newActivity$date), FUN = sum )
 
 par (mfrow=c(1,2))
-stepsPlotAct <- hist(totalStepsAct$x, main = "Total Number of Steps Taken Each Day", xlab="Total Steps",
+stepsPlotAct <- hist(totalStepsAct$x, main = "Total Steps", xlab=" ",
                      ylim = c(0, 40),
                      sub = "Imputed missing values",
                      col = "Sky Blue")
         abline(v=median(totalStepsAct$x), col = "red", lwd=2)
 
-stepsPlot <- hist(totalSteps$x, main = "Total Number of Steps Taken Each Day", ylim = c(0, 40),
-                  sub= "Excluded missing values",xlab = "Total Steps", col = "Yellow")
+stepsPlot <- hist(totalSteps$x, main = "Total Steps", ylim = c(0, 40),
+                  sub= "Excluded missing values",xlab = " ", col = "Yellow")
         abline(v=median(totalSteps$x), col = "red", lwd=2)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk Imputed_Excluded](figure/Imputed_Excluded.png) 
 
 ```r
 # original data set with missing values in steps 
@@ -289,7 +291,7 @@ library(lattice)
 xyplot(x ~interval | type, data, type = "l", layout=c(1,2), ylab = "Average number of steps taken")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk WeekEnd_Day](figure/WeekEnd_Day.png) 
 
 Examining the chart the maximum average number of steps for the week occurs on weekday mornings between 5:00 AM and 10:00 AM. The calculation below establishes the exact interval at 8:35 AM.
 
